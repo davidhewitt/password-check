@@ -1,0 +1,8 @@
+[package]
+authors = ["David Hewitt <david.hewitt.92@gmail.com>"]
+name = "password-check"
+version = "0.1.0"
+[dependencies]
+reqwest = "0.8.6"
+rpassword = "2.0.0"
+sha1 = "0.6.0"
