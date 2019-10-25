@@ -19,7 +19,7 @@ fn main() {
     let body = response.text().unwrap();
 
     // Reponse is a series of lines like
-    // 
+    //
     //  suffix:N
     //
     // Where N is the number of times that password has appeared.
@@ -29,7 +29,7 @@ fn main() {
         if split.next().unwrap() == suffix {
             println!("{} matches found.", split.next().unwrap());
             return;
-        } 
+        }
     }
 
     println!("No matches found.");
