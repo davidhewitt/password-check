@@ -1,10 +1,12 @@
 [package]
 authors = ["David Hewitt <david.hewitt.92@gmail.com>"]
 name = "password-check"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2018"
 
 [dependencies]
-reqwest = "0.9.22"
-rpassword = "4.0.1"
-sha1 = "0.6.0"
+anyhow = "1.0"
+reqwest = "0.11"
+rpassword = "5.0"
+sha1 = "0.6"
+tokio = { version = "1.0", features = ["macros", "rt"] }

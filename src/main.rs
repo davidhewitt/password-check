@@ -1,12 +1,12 @@
-extern crate reqwest;
-extern crate rpassword;
-extern crate sha1;
+use anyhow::{Context, Result};
 
 // Securely read a password and query the Pwned Passwords API to
 // determine if it's been breached ever.
 
-fn main() {
-    let pass = rpassword::prompt_password_stdout("Password: ").unwrap();
+#[tokio::main(flavor = "current_thread")]
+async fn main() -> Result<()> {
+    let pass = rpassword::prompt_password_stdout("Password: ")
+        .context("failed to read password from stdin")?;
 
     let digest = sha1::Sha1::from(pass).digest().to_string().to_uppercase();
     let (prefix, suffix) = (&digest[..5], &digest[5..]);
@@ -14,9 +14,14 @@ fn main() {
     // API requires us to submit just the first 5 characters of the hash
 
     let url = format!("https://api.pwnedpasswords.com/range/{}", prefix);
-    let mut response = reqwest::get(&url).unwrap();
+    let response = reqwest::get(&url)
+        .await
+        .with_context(|| format!("failed to GET {}", url))?;
 
-    let body = response.text().unwrap();
+    let body = response
+        .text()
+        .await
+        .context("failed to parse request as text")?;
 
     // Reponse is a series of lines like
     //
@@ -25,13 +30,16 @@ fn main() {
     // Where N is the number of times that password has appeared.
 
     for line in body.lines() {
-        let mut split = line.split(':');
-        if split.next().unwrap() == suffix {
-            println!("{} matches found.", split.next().unwrap());
-            return;
+        let (hash, count) = line
+            .split_once(':')
+            .context("expected hash:count on each line")?;
+        if hash == suffix {
+            println!("{} matches found.", count);
+            return Ok(());
         }
     }
 
     println!("No matches found.");
-    return;
+
+    Ok(())
 }
