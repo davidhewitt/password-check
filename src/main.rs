@@ -32,11 +32,10 @@ async fn main() -> Result<()> {
     //
     // Where N is the number of times that password has appeared.
 
+    let matching_prefix = format!("{suffix}:");
+
     for line in body.lines() {
-        let (hash, count) = line
-            .split_once(':')
-            .context("expected hash:count on each line")?;
-        if hash == suffix {
+        if let Some(count) = line.strip_prefix(&matching_prefix) {
             let times = if count == "1" { "time" } else { "times" };
             println!("Your password appears in the database {count} {times}.");
             return Ok(());
