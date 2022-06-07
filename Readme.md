@@ -4,4 +4,4 @@ A simple command-line utility to check a single password against the [Pwned Pass
 
 ## Usage
 
-You will need the Rust programming language installed (should work on most recent stable versions as of July 2018). Simply execute `cargo run`, and then input the password to check when prompted.
+You will need the Rust programming language installed (should work on Rust 1.58 and newer). Simply execute `cargo run`, and then input the password to check when prompted.

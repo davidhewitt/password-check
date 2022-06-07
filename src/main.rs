@@ -1,22 +1,25 @@
 use anyhow::{Context, Result};
+use sha1::{Sha1, Digest};
 
 // Securely read a password and query the Pwned Passwords API to
 // determine if it's been breached ever.
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<()> {
-    let pass = rpassword::prompt_password_stdout("Password: ")
+    let pass = rpassword::prompt_password("Password: ")
         .context("failed to read password from stdin")?;
 
-    let digest = sha1::Sha1::from(pass).digest().to_string().to_uppercase();
+    let mut hasher = Sha1::new();
+    hasher.update(pass);
+    let digest = hex::encode_upper(hasher.finalize());
     let (prefix, suffix) = (&digest[..5], &digest[5..]);
 
     // API requires us to submit just the first 5 characters of the hash
 
-    let url = format!("https://api.pwnedpasswords.com/range/{}", prefix);
+    let url = format!("https://api.pwnedpasswords.com/range/{prefix}");
     let response = reqwest::get(&url)
         .await
-        .with_context(|| format!("failed to GET {}", url))?;
+        .with_context(|| format!("failed to GET {url}"))?;
 
     let body = response
         .text()
@@ -34,7 +37,8 @@ async fn main() -> Result<()> {
             .split_once(':')
             .context("expected hash:count on each line")?;
         if hash == suffix {
-            println!("{} matches found.", count);
+            let times = if count == "1" { "time" } else { "times" };
+            println!("Your password appears in the database {count} {times}.");
             return Ok(());
         }
     }

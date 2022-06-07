@@ -2,11 +2,12 @@
 authors = ["David Hewitt <david.hewitt.92@gmail.com>"]
 name = "password-check"
 version = "0.2.0"
-edition = "2018"
+edition = "2021"
 
 [dependencies]
 anyhow = "1.0"
+hex = "0.4.3"
 reqwest = "0.11"
-rpassword = "5.0"
-sha1 = "0.6"
+rpassword = "6.0"
+sha1 = "0.10"
 tokio = { version = "1.0", features = ["macros", "rt"] }
