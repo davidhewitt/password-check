@@ -8,6 +8,6 @@ edition = "2021"
 anyhow = "1.0"
 hex = "0.4.3"
 reqwest = "0.11"
-rpassword = "6.0"
+rpassword = "7.2"
 sha1 = "0.10"
 tokio = { version = "1.20", features = ["macros", "rt"] }
